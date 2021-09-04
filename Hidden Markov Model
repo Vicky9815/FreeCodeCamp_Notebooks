@@ -1,0 +1,228 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled2.ipynb",
+      "provenance": [],
+      "collapsed_sections": [
+        "CuYSnJaMNyzY"
+      ],
+      "toc_visible": true,
+      "authorship_tag": "ABX9TyOwxGLYPwOV3spcL+J5dqKy",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/VictoriaKwamboka/FreeCodeCamp_Notebooks/blob/main/Hidden%20Markov%20Model\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "kdz7-2meJG48"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "3orazMJTJ0Jo"
+      },
+      "source": [
+        "**Basic Algorithm for K- Means**\n",
+        " \n",
+        "\n",
+        "1.  Randomly pick K points to place K centroids\n",
+        "2.   Assign all of the data points to the centroids by distance(e.g Euclidean distance).\n",
+        "3.   Average all the points belonging to each centroid to find the middle of those clusters (center of mass). Place the corresponding centroids into that position\n",
+        "4.  Reassign every point once again in the closest centroid.\n",
+        "5.  Repeat 3-4 until no pint changes which centroid it belongs to.\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zVDMNQ-HLVPA"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "_-tdpcFfLXci"
+      },
+      "source": [
+        "# Hidden Markov Models\n",
+        "This is a finite set of states , each of which is associated with a (generally multidimensional) probability distribution. Transitions among the states are governed by a set of probabilities called **Transition probabilities**\n",
+        "\n",
+        "The model works with probabilities to predict future events or states. e.g weather"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "CuYSnJaMNyzY"
+      },
+      "source": [
+        "**Data**\n",
+        "\n",
+        "\n",
+        "\n",
+        "*   **States**: In each markov model, we have a finite set of states. They could be something like 'hot', 'warm' or 'red', 'blue' and 'yellow'\n",
+        "*   **Observations**: Each state has a particular outcome or observation associated with it based on a probability distribution. e.g 'On a hot day, Victoria has a 20% chance of wearing a hoodie' and 80% of not wearing it.\n",
+        "*   **Transition**: Each state has a probability defining the the likelihood of ransitioning to a different state. e.g a cold day has a 20% chance of being followed by a hot day or a 80% chance of being followed by a cold day.\n",
+        "\n",
+        "\n",
+        "So to create a markov model we need:\n",
+        "* States\n",
+        "* Observation Distribution\n",
+        "* Transition Distribution\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "1S7RX7yxJwsz"
+      },
+      "source": [
+        ""
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "nJOLO-KhQf6s"
+      },
+      "source": [
+        "# Imports and Setup"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "uZLzS0Y-Lfqj"
+      },
+      "source": [
+        "import tensorflow_probability as tfp\n",
+        "import tensorflow as tf"
+      ],
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "mWt6LO-gRooz"
+      },
+      "source": [
+        "# Weather Model\n",
+        "\n",
+        "The objective is to predict the temperature on each day given the following tinformation:\n",
+        "* Cold days are encoded as 0 and hot days are encoded as 1\n",
+        "* The first day in our sequence has an 80% chance of being cold.\n",
+        "* A cold day has a 30% chance of being followed by by a hot day.\n",
+        "* A hot day has a 20% chance of being followed by a cold day.\n",
+        "* On each day, the temperature is normally distributed with mean and standard deviation 0 and 5 on a cold day and 15 and 10 respectively on the hot day.\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Cs18e1bjRkXH"
+      },
+      "source": [
+        "tfd= tfp.distributions #making a shortcut for later\n",
+        "initial_distribution = tfd.Categorical(probs=[0.8,0.2])#first day weather probabilities\n",
+        "transition_distribution=tfd.Categorical(probs= [[0.7,0.3],[0.2,0.8]]) #point 3 an 4, 2 states hence two probabilites\n",
+        "observation_distribution= tfd.Normal(loc=[0., 15.], scale=[5.,10.])# means and standard deviations of cold and hot days. the dots are to ensure they are all floats\n",
+        "\n",
+        "\n",
+        "#the loc argument represents th mean and the scale is the standard deviation"
+      ],
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "wioJ3h13Yn2Y"
+      },
+      "source": [
+        "model = tfd.HiddenMarkovModel(\n",
+        "    initial_distribution= initial_distribution,\n",
+        "    transition_distribution= transition_distribution,\n",
+        "    observation_distribution= observation_distribution,\n",
+        "    num_steps= 7) #num_steps represents how many days we are predicting for"
+      ],
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Y-S1GtKvZW9t",
+        "outputId": "bcf2ab9d-4f13-4b9e-a2d2-7f3a86b0e0c6"
+      },
+      "source": [
+        "mean= model.mean() \n",
+        "print(mean)\n",
+        "#this prints the temperature for the 8 num_steps(days). Since we started with a cold day, the temperatures start low and go higher."
+      ],
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "tf.Tensor([2.9999998 5.9999995 7.4999995 8.25      8.625001  8.812501  8.90625  ], shape=(7,), dtype=float32)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SXBI31vTZzN3"
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
